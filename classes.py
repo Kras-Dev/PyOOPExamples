@@ -33,6 +33,9 @@ class Product:
     def __str__(self):
         return f"Product: {self._name}, Price: {self._price}"
 
+    def __repr__(self):
+        return f"Product: ('{self._name}', {self._price})"
+
 # Класс продукта питания
 class FoodProduct(Product):
     def __init__(self, name: str, price: float, expiration_date: date, is_vegan: bool):
@@ -56,21 +59,24 @@ class ElectronicProduct(Product):
 # Класс корзина
 class Cart:
     def __init__(self):
-        self._products = []
+        self.__products = []
 
     def add_product(self, product: Product):
-        self._products.append(product)
+        self.__products.append(product)
 
     def remove_product(self, product: Product):
-        self._products.remove(product)
+        self.__products.remove(product)
 
     @property
     def get_total_price(self) -> float:
-        return round(sum(product.price for product in self._products), 2)
+        return round(sum(product.price for product in self.__products), 2)
 
     @property
     def products(self):
-        return list(self._products)
+        return list(self.__products)
+
+    def __getitem__(self, index):
+        return self.__products[index]
 
 # Класс заказ
 class Order:
@@ -93,13 +99,15 @@ if __name__ == "__main__":
     p = Product("soap", 2.22)
     print(p)
     p1 = FoodProduct("milk", 4.21, date(2026, 12, 31), False)
-    print(p1)
+    print(str(p1))
+    print(repr(p1))
     e = ElectronicProduct("TV", 99.99, 24, 90)
     c = Cart()
     c.add_product(p)
     c.add_product(p1)
     c.add_product(e)
-    print(c.get_total_price)
+    print(f"total_price: {c.get_total_price}")
+    print(f"Called __getitem__ with index: {c[2]}")
     for product in c.products:
         print(product)
     order = Order(c, "123-456-78")
